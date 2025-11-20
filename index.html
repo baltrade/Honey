@@ -804,7 +804,18 @@ header {
     border-radius: var(--radius);
   }
   .banner {
+    width: 100%;
+    margin-left: 0;
+    left: 0;
+    transform: none;
+    position: static;
     margin-bottom: 16px;
+    padding: 0;
+  }
+  .banner img {
+    width: 100%;
+    object-fit: cover;
+    margin: 0;
   }
   .top-bar {
     font-size: 0.8rem;
@@ -1130,8 +1141,6 @@ header {
         ],
         products: [
           {name: "Roku krēms", price: "8.00", img: "photo/krems1.jpg", description: "Roku krēms ar medus ekstraktu. 98% dabīgs sastāvs. Tilpums – 50 ml."},
-        
-         
           {name: "Universāla ziede", price: "9.00", img: "photo/ziede1.jpg", description: "Sastāvs – vasks, augsts propolisa saturs un augu eļļas. Reģenerē ādu, veicina brūču un apdegumu dzīšanu, dezinficē, mīkstina ādu. Mazina iekaisumus un lobīšanos."},
           {name: "Balzams", price: "6.00", img: "photo/losjons.jpg", description: "Sastāvā bišu vasks, propoliss, piparmētru, eikalipta un kanēļa ēteriskās eļļas. Iedarbība gan atvēsinoša, gan sildoša."},
           {name: "Lūpu vasks", price: "5.00", img: "photo/vaska1.jpg", description: "Sastāv no bišu vaska, vīnogu kauliņu eļļas, kokosriekstu eļļas, propolisa un vaniļas ēteriskās eļļas. Kopj lūpas."}
@@ -1193,7 +1202,6 @@ header {
         ],
         products: [
          {name: "Крем для рук", price: "8.00", img: "photo/krems1.jpg", description: "Крем для рук с экстрактом мёда. 98% натуральный состав. Объём - 50 мл"},
-        
           {name: "Универсальная мазь", price: "9.00", img: "photo/ziede1.jpg", description: "Состав-воск, высокое содержание прополиса и растительные масла. Регенерирует кожу, способствует заживлению ран и ожогов, обеззараживает, смягчает кожу. Снимает воспаления и шелушения."},
           {name: "Бальзам", price: "6.00", img: "photo/losjons.jpg", description: "В составе пчелиный воск, прополис, эфирные масла мяты, эвкалипта и корицы. Действие как охлаждающее, так и согревающее."},
           {name: "Воск для губ", price: "5.00", img: "photo/vaska1.jpg", description: "Состоит из пчелиного воска, масла виноградной косточки, кокосового масла, прополиса и эфирного масла ванили. Ухаживает за губами."}
@@ -1284,17 +1292,21 @@ header {
     function loadProducts(lang) {
       const list = $('#products-list');
       list.empty();
-      translations[lang].products.forEach(p => {
+      translations[lang].products.forEach((p, index) => {
+        const itemId = 'item-' + index;
         list.append(`
-          <div class="product-card simpleCart_shelfItem" data-description="${p.description}">
+          <div class="product-card simpleCart_shelfItem"
+               data-item-id="${itemId}"
+               data-item-name="${p.name}"
+               data-item-price="${p.price}"
+               data-item-image="${p.img}"
+               data-item-description="${p.description}">
             <img src="${p.img}" alt="${p.name}">
-            <div>
-              <h3 class="item_name">${p.name}</h3>
-              <div class="price"><span class="item_price">${p.price}</span> EUR</div>
-            </div>
-            <div style="margin-top:12px;">
-              <a href="javascript:;" class="add-btn item_add">${translations[lang].addToCart}</a>
-            </div>
+            <h3 class="item_name">${p.name}</h3>
+            <div class="price"><span class="item_price">${p.price}</span> EUR</div>
+            <a href="javascript:;" class="add-btn item_add">
+              ${translations[lang].addToCart}
+            </a>
           </div>
         `);
       });
@@ -1454,7 +1466,7 @@ header {
         const name = $card.find('.item_name').text();
         const price = $card.find('.item_price').text();
         const img = $card.find('img').attr('src');
-        const description = $card.data('description');
+        const description = $card.data('item-description');
         $('#product-modal img').attr('src', img).attr('alt', name);
         $('#product-modal h3').text(name);
         $('#product-modal .description').text(description);
@@ -1509,7 +1521,7 @@ header {
         var deliveryText = deliveryType === "Pašizņemšana Mārupē" ? t.pickupOption : deliveryType;
         var cartTextForModal = `Order ID: ${orderId}\n\n` + items.map(it => it.get('quantity') + ' × ' + it.get('name') + ' (' + parseFloat(it.get('price')).toFixed(2) + ' EUR)').join('\n') + `\n${t.totalLabel} ${totalWithDelivery} EUR\n${t.deliveryLabel} ${deliveryText}` + (deliveryType.includes("pakomāts") ? `\n${t.lockerLabel} ${lockerAddr}` : '') + `\n${t.paymentLabel} ${paymentType}` + (transactionId ? `\nPayPal Transaction ID: ${transactionId}` : '') + `\n\n<span class="contact-soon">${t.contactSoon}</span>`;
         var cartTextForEmail = `Order ID: ${orderId}\n\n` + items.map(it => it.get('quantity') + ' × ' + it.get('name') + ' (' + parseFloat(it.get('price')).toFixed(2) + ' EUR)').join('\n') + `\n${t.totalLabel} ${totalWithDelivery} EUR\n${t.deliveryLabel} ${deliveryText}` + (deliveryType.includes("pakomāts") ? `\n${t.lockerLabel} ${lockerAddr}` : '') + `\n${t.paymentLabel} ${paymentType}` + (transactionId ? `\nPayPal Transaction ID: ${transactionId}` : '') + `\n\n**${t.contactSoon}**`;
-       
+      
         $('#cart_contents').val(cartTextForEmail);
         $('#order_id').val(orderId);
         $('#paypal_transaction_id').val(transactionId);
@@ -1624,4 +1636,3 @@ header {
   </script>
 </body>
 </html>
-
